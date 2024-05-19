@@ -3,26 +3,40 @@ export type ColorObject = {
     rgba: string;
 };
 
+export enum ColorVariants {
+  PRIMARY = "PRIMARY",
+  SECONDARY = "SECONDARY",
+  TERTIARY = "TERTIARY",
+  TEXT = "TEXT",
+  ERROR = "ERROR",
+  SUCCESS = "SUCCESS",
+  PAGE_BACKGROUND = "PAGE_BACKGROUND",
+  LINK = "LINK",
+  SECONDARY_LIGHT = "SECONDARY_LIGHT",
+  ICON_GREY = "ICON_GREY"
+}
+
+export enum StaticColorVariants {
+  WHITE = "WHITE",
+  BLACK = "BLACK",
+  LINK = "LINK",
+  GREY_DARK = "GREY_DARK"
+}
+
 export type ThemeColorsObject = {
-    PRIMARY: ColorObject;
-    SECONDARY: ColorObject;
-    TERTIARY: ColorObject;
-    TEXT: ColorObject;
-    ERROR: ColorObject;
-    SUCCESS: ColorObject;
-    PAGE_BACKGROUND: ColorObject;
-    LINK: ColorObject;
-    SECONDARY_LIGHT: ColorObject;
-    ICON_GREY: ColorObject;
-  };
+  [key in ColorVariants]: string;
+};
+
+export type FontVariant= {
+  fontSize: string,
+  fontWeight: number,
+  lineHeight: string | number
+}
  
- export type ColorPalette = {
-    light: ThemeColorsObject;
-    dark: ThemeColorsObject;
-    static: {
-      WHITE: ColorObject;
-      BLACK: ColorObject;
-      LINK: ColorObject;
-      GREY_DARK: ColorObject;
-    };
+export type ColorPalette = {
+  light: ThemeColorsObject;
+  dark: ThemeColorsObject;
+  static: {
+    [key in StaticColorVariants]: string;
   };
+};

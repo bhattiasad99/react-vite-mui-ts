@@ -1,52 +1,11 @@
 import { TypographyOptions } from "@mui/material/styles/createTypography";
 import { ThemeOptions } from "@mui/material/styles";
-import { ColorObject, ColorPalette } from "./theme.types";
+import { ColorObject, ColorVariants, StaticColorVariants } from "./theme.types";
 import { getColorObject } from "./theme.helpers";
 import { ColorMode } from "./theme.provider";
-
-// colors
-export const COLOR_PALETTE: ColorPalette = {
-  light: {
-    PRIMARY: getColorObject("9C4E9D"),
-    SECONDARY: getColorObject("3B98D4"),
-    TERTIARY: getColorObject("F6BA17"),
-    TEXT: getColorObject("333333"),
-    ERROR: getColorObject("E44747"),
-    SUCCESS: getColorObject("68BC46"),
-    PAGE_BACKGROUND: getColorObject("F7F7F7"),
-    LINK: getColorObject("1E4AE9"),
-    SECONDARY_LIGHT: getColorObject("AAE4D0"),
-    ICON_GREY: getColorObject("7A7E8B"),
-  },
-  dark: {
-    PRIMARY: getColorObject("9C4E9D"),
-    SECONDARY: getColorObject("3B98D4"),
-    TERTIARY: getColorObject("F6BA17"),
-    TEXT: getColorObject("333333"),
-    ERROR: getColorObject("E44747"),
-    SUCCESS: getColorObject("68BC46"),
-    PAGE_BACKGROUND: getColorObject("F7F7F7"),
-    LINK: getColorObject("1E4AE9"),
-    SECONDARY_LIGHT: getColorObject("AAE4D0"),
-    ICON_GREY: getColorObject("7A7E8B"),
-  },
-  static: {
-    WHITE: getColorObject("ffffff"),
-    BLACK: getColorObject("000000"),
-    LINK: getColorObject("1656FD"),
-    GREY_DARK: getColorObject("BEBEBE"),
-  },
-};
+import { COLOR_PALETTE, FONT_FAMILIES, CUSTOM_FONT_VARIANTS } from "./theme.setup";
 
 const getRgbaColorValue = (obj: ColorObject) => obj.rgba;
-
-export const FONT_WEIGHTS = {
-  SEMI_BOLD: "600",
-  MEDIUM: "500",
-  REGULAR: "400",
-  BOLD: "800"
-}
-
 
 declare module "@mui/material/Typography" {
   interface TypographyPropsVariantOverrides {
@@ -54,10 +13,19 @@ declare module "@mui/material/Typography" {
   }
 }
 
-interface ExtendedTypographyOptions extends TypographyOptions {
+type ExtendedTypographyOptions = TypographyOptions & {
   AuthHeading: React.CSSProperties;
-}
+};
 
+const getColor = (variant: ColorVariants | StaticColorVariants, isStatic = false, mode?: ColorMode) => {
+  if (isStatic) {
+    return getRgbaColorValue(getColorObject(COLOR_PALETTE.static[variant as StaticColorVariants]));
+  }
+  if (mode) {
+    return getRgbaColorValue(getColorObject(COLOR_PALETTE[mode][variant as ColorVariants]));
+  }
+  throw new Error('Mode must be provided for non-static colors');
+};
 
 export const getDesignTokens = (mode: ColorMode) => {
   return {
@@ -71,47 +39,31 @@ export const getDesignTokens = (mode: ColorMode) => {
     palette: {
       mode: mode,
       primary: {
-        main: getRgbaColorValue(COLOR_PALETTE[mode].PRIMARY),
+        main: getColor(ColorVariants.PRIMARY, false, mode),
       },
       secondary: {
-        main: getRgbaColorValue(COLOR_PALETTE[mode].SECONDARY),
+        main: getColor(ColorVariants.SECONDARY, false, mode),
       },
       common: {
-        black: getRgbaColorValue(COLOR_PALETTE.static.BLACK),
-        white: getRgbaColorValue(COLOR_PALETTE.static.WHITE),
+        black: getColor(StaticColorVariants.BLACK, true),
+        white: getColor(StaticColorVariants.WHITE, true),
       },
       error: {
-        main: getRgbaColorValue(COLOR_PALETTE[mode].ERROR),
+        main: getColor(ColorVariants.ERROR, false, mode),
       },
       success: {
-        main: getRgbaColorValue(COLOR_PALETTE[mode].SUCCESS),
+        main: getColor(ColorVariants.SUCCESS, false, mode),
       },
       text: {
-        primary: getRgbaColorValue(COLOR_PALETTE[mode].TEXT),
+        primary: getColor(ColorVariants.TEXT, false, mode),
       },
       background: {
-        default: getRgbaColorValue(COLOR_PALETTE[mode].PAGE_BACKGROUND),
+        default: getColor(ColorVariants.PAGE_BACKGROUND, false, mode),
       },
     },
     typography: {
-      fontFamily: [
-        'jost',
-        '-apple-system',
-        'BlinkMacSystemFont',
-        '"Segoe UI"',
-        'Roboto',
-        '"Helvetica Neue"',
-        'Arial',
-        'sans-serif',
-        '"Apple Color Emoji"',
-        '"Segoe UI Emoji"',
-        '"Segoe UI Symbol"',
-      ].join(','),
-      AuthHeading: {
-        fontWeight: FONT_WEIGHTS.SEMI_BOLD,
-        fontSize: "2.5rem",
-        lineHeight: "125%",
-      },
+      fontFamily: FONT_FAMILIES.join(','),
+      ...CUSTOM_FONT_VARIANTS
     } as ExtendedTypographyOptions,
   } as ThemeOptions;
 };
